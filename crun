@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+set -u
+
+usage() {
+    echo "Verwendung: crun DATEI.c [PROGRAMM_ARGUMENTE ...]" >&2
+}
+
+if [[ $# -lt 1 ]]; then
+    usage
+    exit 2
+fi
+
+source_file=$1
+shift
+
+if [[ ! -f $source_file ]]; then
+    echo "crun: Datei nicht gefunden: $source_file" >&2
+    exit 2
+fi
+
+if [[ $source_file != *.c ]]; then
+    echo "crun: Erwartet eine C-Datei (*.c): $source_file" >&2
+    exit 2
+fi
+
+if ! command -v gcc >/dev/null 2>&1; then
+    echo "crun: gcc wurde nicht gefunden." >&2
+    exit 127
+fi
+
+binary=$(mktemp "${TMPDIR:-/tmp}/crun.XXXXXXXX") || exit 1
+trap 'rm -f "$binary"' EXIT INT TERM
+
+echo "[crun] Kompiliere $source_file"
+if ! gcc -std=c17 -Wall -Wextra -Wpedantic -g "$source_file" -o "$binary"; then
+    echo "[crun] Kompilierung fehlgeschlagen." >&2
+    exit 1
+fi
+
+echo "[crun] Starte $source_file"
+"$binary" "$@"
