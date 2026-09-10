@@ -1,0 +1,8 @@
+gcc -std=gnu17 -Wall -Wextra -Wpedantic -g \
+    -fsanitize=address,undefined \
+    main.c list.c \
+    -o app
+
+gcc -c main.c -o main.o
+gcc -c list.c -o list.o
+gcc main.o list.o -o app
