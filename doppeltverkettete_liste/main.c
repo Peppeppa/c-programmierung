@@ -34,7 +34,7 @@ int list_push_back(struct List *list, int value) {
   } else {
     newNode->prev = list->last;
 
-    list->first->next = newNode;
+    list->last->next = newNode;
     list->last = newNode;
   }
   list->size++;
@@ -94,6 +94,30 @@ int list_pop_front(struct List *list, int *value) {
   return 0;
 }
 
+int list_pop_back(struct List *list, int *value){
+
+  if(list->last == NULL){
+    return 1;
+  }
+
+  struct Node *oldLast = list->last;
+  *value = oldLast->value;
+
+  if(list->last->prev == NULL){
+    list->first = NULL;
+    list->last = NULL;
+  }
+  else {
+    list->last = list->last->prev;
+    list->last->next = NULL;
+  }
+
+  list->size--;
+  free(oldLast);
+  return 0;
+}
+
+
 int main(void) {
 
   struct List liste;
@@ -101,23 +125,6 @@ int main(void) {
   liste.first = NULL;
   liste.last = NULL;
   liste.size = 0;
-
-  if (list_push_back(&liste, 0) != 0) {
-    return 1;
-  }
-  if (list_push_back(&liste, 10) != 0) {
-
-    return 1;
-  }
-
-  struct Node *current = liste.first;
-
-  while (current != NULL) {
-    printf("%d\n", current->value);
-    current = current->next;
-  }
-
-  return 0;
 
   return 0;
 }
