@@ -117,6 +117,23 @@ int list_pop_back(struct List *list, int *value){
   return 0;
 }
 
+list_clear(struct List *list){
+  
+  if(list->first == NULL){
+  
+  struct Node *current = list->first;
+
+  while (current->next != NULL){
+    current = current->next;
+    free(current->prev);
+  }
+
+  list->first = NULL;
+  list->last = NULL;
+  free(current);
+  return 0;
+}
+
 
 int main(void) {
 
